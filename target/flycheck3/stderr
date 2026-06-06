@@ -1,0 +1,50 @@
+   1.309935791s  INFO prepare_target{force=false package_id=recipes-app-env-promote-blue v0.1.0 (/Users/ji.dominguez/Desktop/dev/env-promote-blue-lambda-a874948da) target="recipes-app-env-promote-blue"}: cargo::core::compiler::fingerprint: fingerprint error for recipes-app-env-promote-blue v0.1.0 (/Users/ji.dominguez/Desktop/dev/env-promote-blue-lambda-a874948da)/Check { test: false }/TargetInner { name: "recipes-app-env-promote-blue", doc: true, ..: with_path("/Users/ji.dominguez/Desktop/dev/env-promote-blue-lambda-a874948da/src/main.rs", Edition2021) }
+   1.310138916s  INFO prepare_target{force=false package_id=recipes-app-env-promote-blue v0.1.0 (/Users/ji.dominguez/Desktop/dev/env-promote-blue-lambda-a874948da) target="recipes-app-env-promote-blue"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/ji.dominguez/Desktop/dev/env-promote-blue-lambda-a874948da/target/debug/.fingerprint/recipes-app-env-promote-blue-65d287b17b24725a/bin-recipes-app-env-promote-blue`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: <std::backtrace::Backtrace>::create
+   1: cargo_util::paths::read_bytes
+   2: cargo_util::paths::read
+   3: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   4: cargo::core::compiler::fingerprint::prepare_target
+   5: cargo::core::compiler::compile
+   6: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   7: cargo::ops::cargo_compile::compile_ws
+   8: cargo::ops::cargo_compile::compile_with_exec
+   9: cargo::ops::cargo_compile::compile
+  10: cargo::commands::check::exec
+  11: <cargo::cli::Exec>::exec
+  12: cargo::main
+  13: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  14: std::rt::lang_start::<()>::{closure#0}
+  15: std::rt::lang_start_internal
+  16: _main
+   1.487467833s  INFO prepare_target{force=false package_id=recipes-app-env-promote-blue v0.1.0 (/Users/ji.dominguez/Desktop/dev/env-promote-blue-lambda-a874948da) target="recipes-app-env-promote-blue"}: cargo::core::compiler::fingerprint: fingerprint error for recipes-app-env-promote-blue v0.1.0 (/Users/ji.dominguez/Desktop/dev/env-promote-blue-lambda-a874948da)/Check { test: true }/TargetInner { name: "recipes-app-env-promote-blue", doc: true, ..: with_path("/Users/ji.dominguez/Desktop/dev/env-promote-blue-lambda-a874948da/src/main.rs", Edition2021) }
+   1.487481458s  INFO prepare_target{force=false package_id=recipes-app-env-promote-blue v0.1.0 (/Users/ji.dominguez/Desktop/dev/env-promote-blue-lambda-a874948da) target="recipes-app-env-promote-blue"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/ji.dominguez/Desktop/dev/env-promote-blue-lambda-a874948da/target/debug/.fingerprint/recipes-app-env-promote-blue-339b1680820657b3/test-bin-recipes-app-env-promote-blue`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: <std::backtrace::Backtrace>::create
+   1: cargo_util::paths::read_bytes
+   2: cargo_util::paths::read
+   3: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   4: cargo::core::compiler::fingerprint::prepare_target
+   5: cargo::core::compiler::compile
+   6: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   7: cargo::ops::cargo_compile::compile_ws
+   8: cargo::ops::cargo_compile::compile_with_exec
+   9: cargo::ops::cargo_compile::compile
+  10: cargo::commands::check::exec
+  11: <cargo::cli::Exec>::exec
+  12: cargo::main
+  13: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  14: std::rt::lang_start::<()>::{closure#0}
+  15: std::rt::lang_start_internal
+  16: _main
+    Checking recipes-app-env-promote-blue v0.1.0 (/Users/ji.dominguez/Desktop/dev/env-promote-blue-lambda-a874948da)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.11s

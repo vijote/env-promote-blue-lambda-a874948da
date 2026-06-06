@@ -1,6 +1,6 @@
 use aws_config::BehaviorVersion;
 use aws_sdk_cloudfront::Client as CloudFrontClient;
-use lambda_http::{run, service_fn, Body, Error, Request, Response, Result};
+use lambda_http::{run, service_fn, Body, Error, Request, Response};
 use serde::Deserialize;
 use serde_json::json;
 
@@ -57,7 +57,7 @@ async fn promote_staging_handler(req: Request, client: &CloudFrontClient) -> Res
     // 3. Ejecutar la promoción atómica
     // Esto copia los Origins de la staging distribution directamente a la producción estándar.
     match client
-        .update_distribution_with_staging_modifier()
+        .update_distribution_with_staging_config()
         .id(&payload.primary_distribution_id)
         .staging_distribution_id(&payload.staging_distribution_id)
         .if_match(if_match_etag)

@@ -1,0 +1,9 @@
+/Users/ji.dominguez/Desktop/dev/env-promote-blue-lambda-a874948da/target/debug/deps/aws_smithy_xml-f2d92d382156c7e1.d: /Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/lib.rs /Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/decode.rs /Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/encode.rs /Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/escape.rs /Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/unescape.rs
+
+/Users/ji.dominguez/Desktop/dev/env-promote-blue-lambda-a874948da/target/debug/deps/libaws_smithy_xml-f2d92d382156c7e1.rmeta: /Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/lib.rs /Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/decode.rs /Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/encode.rs /Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/escape.rs /Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/unescape.rs
+
+/Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/lib.rs:
+/Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/decode.rs:
+/Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/encode.rs:
+/Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/escape.rs:
+/Users/ji.dominguez/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.15/src/unescape.rs:
