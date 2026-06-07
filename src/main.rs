@@ -51,14 +51,22 @@ async fn promote_staging_handler(req: Request, client: &CloudFrontClient) -> Res
         }
     };
 
-    // Extraemos el ETag de la distribución primaria y limpiamos las comillas
-let if_match_etag = primary_config_output
-    .e_tag()
-    .expect("Error al obtener ETag!!")
-    .trim_matches('"')
-    .to_string();
+    let staging_config_output = client
+    .get_distribution_config()
+    .id(&payload.staging_distribution_id)
+    .send()
+    .await?;
 
-    println!("etag: '{}'", &if_match_etag);
+    let primary_etag = primary_config_output
+        .e_tag()
+        .expect("primary etag missing");
+
+    let staging_etag = staging_config_output
+        .e_tag()
+        .expect("staging etag missing");
+
+    let if_match = format!("{}, {}", primary_etag, staging_etag);
+
 
     // 3. Ejecutar la promoción atómica
     // Esto copia los Origins de la staging distribution directamente a la producción estándar.
@@ -66,7 +74,7 @@ let if_match_etag = primary_config_output
         .update_distribution_with_staging_config()
         .id(&payload.primary_distribution_id)
         .staging_distribution_id(&payload.staging_distribution_id)
-        .if_match(if_match_etag)
+        .if_match(if_match)
         .send()
         .await
     {
