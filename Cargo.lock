@@ -1600,6 +1600,7 @@ dependencies = [
  "aws-config",
  "aws-sdk-cloudfront",
  "aws-sdk-dynamodb",
+ "aws-smithy-runtime-api",
  "lambda_http",
  "serde",
  "serde_json",
