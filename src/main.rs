@@ -1,6 +1,6 @@
 use aws_config::BehaviorVersion;
 use aws_sdk_cloudfront::Client as CloudFrontClient;
-use lambda_http::{run, service_fn, Body, Error, Request, Response};
+use lambda_http::{Body, Error, Request, Response, run, service_fn, tracing};
 use serde::Deserialize;
 use serde_json::json;
 
@@ -57,6 +57,8 @@ let if_match_etag = primary_config_output
     .expect("Error al obtener ETag!!")
     .trim_matches('"')
     .to_string();
+
+tracing::debug!("etag: {}", &if_match_etag);
 
     // 3. Ejecutar la promoción atómica
     // Esto copia los Origins de la staging distribution directamente a la producción estándar.
