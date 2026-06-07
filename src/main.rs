@@ -58,7 +58,7 @@ let if_match_etag = primary_config_output
     .trim_matches('"')
     .to_string();
 
-tracing::debug!("etag: {}", &if_match_etag);
+    println!("etag: {}", &if_match_etag);
 
     // 3. Ejecutar la promoción atómica
     // Esto copia los Origins de la staging distribution directamente a la producción estándar.
