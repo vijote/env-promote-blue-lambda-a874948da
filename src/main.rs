@@ -1,6 +1,6 @@
 use aws_config::BehaviorVersion;
 use aws_sdk_cloudfront::Client as CloudFrontClient;
-use lambda_http::{Body, Error, Request, Response, run, service_fn, tracing};
+use lambda_http::{Body, Error, Request, Response, run, service_fn};
 use serde::Deserialize;
 use serde_json::json;
 
@@ -55,7 +55,6 @@ async fn promote_staging_handler(req: Request, client: &CloudFrontClient) -> Res
 let if_match_etag = primary_config_output
     .e_tag()
     .expect("Error al obtener ETag!!")
-    .trim_matches('"')
     .to_string();
 
     println!("etag: {}", &if_match_etag);
@@ -66,7 +65,7 @@ let if_match_etag = primary_config_output
         .update_distribution_with_staging_config()
         .id(&payload.primary_distribution_id)
         .staging_distribution_id(&payload.staging_distribution_id)
-        .if_match(if_match_etag)
+        .if_match("*")
         .send()
         .await
     {
