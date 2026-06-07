@@ -1,8 +1,14 @@
 use aws_config::BehaviorVersion;
 use aws_sdk_cloudfront::Client as CloudFrontClient;
 use lambda_http::{run, service_fn, Body, Error, Request, Response};
+use serde::Deserialize;
 use serde_json::json;
-use std::env;
+
+#[derive(Deserialize)]
+struct PromoteRequest {
+    primary_distribution_id: String,
+    staging_distribution_id: String,
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -17,17 +23,23 @@ async fn main() -> Result<(), Error> {
     .await
 }
 
-async fn promote_staging_handler(_req: Request, client: &CloudFrontClient) -> Result<Response<Body>, Error> {
+async fn promote_staging_handler(req: Request, client: &CloudFrontClient) -> Result<Response<Body>, Error> {
     // 1. Parsear los datos de entrada del HTTP Request
-
-    let primary_distribution_id = env::var("PRIMARY_DISTRIBUTION_ID").expect("PRIMARY_DISTRIBUTION_ID variable is not set!!");
-    let staging_distribution_id = env::var("STAGING_DISTRIBUTION_ID").expect("STAGING_DISTRIBUTION_ID variable is not set!!");
+    let body_bytes = req.body().as_ref();
+    let payload: PromoteRequest = match serde_json::from_slice(body_bytes) {
+        Ok(p) => p,
+        Err(_) => {
+            return Ok(Response::builder()
+                .status(400)
+                .body(Body::from(json!({ "error": "Invalid JSON body" }).to_string()))?)
+        }
+    };
 
     // 2. Para actualizar la distribución primaria con el staging modifier, 
     // AWS CloudFront requiere obligatoriamente el ETag de la distribución Primaria (Producción)
     let primary_config_output = match client
         .get_distribution_config()
-        .id(&primary_distribution_id)
+        .id(&payload.primary_distribution_id)
         .send()
         .await
     {
@@ -46,8 +58,8 @@ async fn promote_staging_handler(_req: Request, client: &CloudFrontClient) -> Re
     // Esto copia los Origins de la staging distribution directamente a la producción estándar.
     match client
         .update_distribution_with_staging_config()
-        .id(&primary_distribution_id)
-        .staging_distribution_id(&staging_distribution_id)
+        .id(&payload.primary_distribution_id)
+        .staging_distribution_id(&payload.staging_distribution_id)
         .if_match(if_match_etag)
         .send()
         .await
@@ -61,7 +73,7 @@ async fn promote_staging_handler(_req: Request, client: &CloudFrontClient) -> Re
                     "status": "Promoted",
                     "message": format!(
                         "La distribución de staging {} ha sido promovida exitosamente a la producción estándar {}.",
-                        &staging_distribution_id, &primary_distribution_id
+                        payload.staging_distribution_id, payload.primary_distribution_id
                     )
                 }).to_string()))?)
         }
