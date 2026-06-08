@@ -1,6 +1,10 @@
+use std::env;
+
 use aws_config::BehaviorVersion;
 use aws_sdk_cloudfront::Client as CloudFrontClient;
 use lambda_http::{Body, Error, Request, Response, run, service_fn};
+use aws_sdk_dynamodb::{Client as DynamoClient};
+use aws_sdk_dynamodb::types::AttributeValue;
 use serde::Deserialize;
 use serde_json::json;
 
@@ -8,6 +12,7 @@ use serde_json::json;
 struct PromoteRequest {
     primary_distribution_id: String,
     staging_distribution_id: String,
+    environment_id: String,
 }
 
 #[tokio::main]
@@ -15,17 +20,19 @@ async fn main() -> Result<(), Error> {
     // Inicializar el SDK de AWS v1
     let config = aws_config::load_defaults(BehaviorVersion::latest()).await;
     let cloudfront_client = CloudFrontClient::new(&config);
+    let dynamo_client = DynamoClient::new(&config);
 
     // Iniciar el runtime de la Lambda HTTP
     run(service_fn(|event: Request| {
-        promote_staging_handler(event, &cloudfront_client)
+        promote_staging_handler(event, &cloudfront_client, &dynamo_client)
     }))
     .await
 }
 
-async fn promote_staging_handler(req: Request, client: &CloudFrontClient) -> Result<Response<Body>, Error> {
+async fn promote_staging_handler(req: Request, cloudfront_client: &CloudFrontClient, dynamo_client: &DynamoClient,) -> Result<Response<Body>, Error> {
     // 1. Parsear los datos de entrada del HTTP Request
     let body_bytes = req.body().as_ref();
+    let table_name = env::var("TABLE_NAME").expect("TABLE_NAME not set!!");
     let payload: PromoteRequest = match serde_json::from_slice(body_bytes) {
         Ok(p) => p,
         Err(_) => {
@@ -37,7 +44,7 @@ async fn promote_staging_handler(req: Request, client: &CloudFrontClient) -> Res
 
     // 2. Para actualizar la distribución primaria con el staging modifier, 
     // AWS CloudFront requiere obligatoriamente el ETag de la distribución Primaria (Producción)
-    let primary_config_output = match client
+    let primary_config_output = match cloudfront_client
         .get_distribution_config()
         .id(&payload.primary_distribution_id)
         .send()
@@ -51,7 +58,7 @@ async fn promote_staging_handler(req: Request, client: &CloudFrontClient) -> Res
         }
     };
 
-    let staging_config_output = client
+    let staging_config_output = cloudfront_client
     .get_distribution_config()
     .id(&payload.staging_distribution_id)
     .send()
@@ -67,10 +74,27 @@ async fn promote_staging_handler(req: Request, client: &CloudFrontClient) -> Res
 
     let if_match = format!("{}, {}", primary_etag, staging_etag);
 
+    if let Err(err) = dynamo_client
+        .update_item()
+        .table_name(&table_name)
+        .key("environment", AttributeValue::S(payload.primary_distribution_id.to_string()))
+        .update_expression("SET env_status = :newStatus")
+        .expression_attribute_values(
+            ":newStatus",
+            AttributeValue::S("blue".to_string()),
+        )
+        .send()
+        .await
+    {
+        return Ok(Response::builder()
+            .status(500)
+            .body(Body::from(json!({ "error": format!("Error durante la promoción: {:?}", err) }).to_string()))?)
+        
+    };
 
     // 3. Ejecutar la promoción atómica
     // Esto copia los Origins de la staging distribution directamente a la producción estándar.
-    match client
+    match cloudfront_client
         .update_distribution_with_staging_config()
         .id(&payload.primary_distribution_id)
         .staging_distribution_id(&payload.staging_distribution_id)
