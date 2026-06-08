@@ -77,7 +77,7 @@ async fn promote_staging_handler(req: Request, cloudfront_client: &CloudFrontCli
     if let Err(err) = dynamo_client
         .update_item()
         .table_name(&table_name)
-        .key("environment", AttributeValue::S(payload.primary_distribution_id.to_string()))
+        .key("environment", AttributeValue::S(payload.environment_id.to_string()))
         .update_expression("SET env_status = :newStatus")
         .expression_attribute_values(
             ":newStatus",
