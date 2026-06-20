@@ -75,6 +75,15 @@ async fn promote_staging_handler(
 
     let if_match = format!("{}, {}", primary_etag, staging_etag);
 
+    if let Err(err) = update_existing_blue(&dynamo_client, &table_name).await {
+        return Ok(Response::builder()
+            .status(500)
+            .body(Body::from(
+                json!({ "error": format!("Error updating blue env! {:?}", err) }).to_string(),
+            ))
+            .expect("Error setting update blue env response body!"));
+    }
+    
     if let Err(err) = dynamo_client
         .update_item()
         .table_name(&table_name)
@@ -91,15 +100,6 @@ async fn promote_staging_handler(
             json!({ "error": format!("Error durante la promoción: {:?}", err) }).to_string(),
         ))?);
     };
-
-    if let Err(err) = update_existing_blue(&dynamo_client, &table_name).await {
-        return Ok(Response::builder()
-            .status(500)
-            .body(Body::from(
-                json!({ "error": format!("Error updating blue env! {:?}", err) }).to_string(),
-            ))
-            .expect("Error setting update blue env response body!"));
-    }
 
     // 3. Ejecutar la promoción atómica
     // Esto copia los Origins de la staging distribution directamente a la producción estándar.
